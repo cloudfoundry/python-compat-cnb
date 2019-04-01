@@ -1,0 +1,5 @@
+.DS_Store
+.idea
+.bin
+python-compat-cnb_*
+python-compat-cnb.tgz
