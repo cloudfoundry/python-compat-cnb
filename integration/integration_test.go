@@ -28,7 +28,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 			uri, err := dagger.PackageBuildpack()
 			Expect(err).ToNot(HaveOccurred())
 
-			pythonCNBURI, err := dagger.PackageLocalBuildpack("python-cnb", "/Users/pivotal/workspace/python-cnb")
+			pythonCNBURI, err := dagger.GetLatestBuildpack("python-cnb")
 			Expect(err).ToNot(HaveOccurred())
 
 			pipCNBURI, err := dagger.GetLatestBuildpack("pip-cnb")
