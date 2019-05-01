@@ -91,6 +91,10 @@ func GetLatestBuildpack(name string) (string, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return "", errors.Errorf("Erroring getting buildpack releases: status %d", resp.StatusCode)
+	}
+
 	release := struct {
 		TagName string `json:"tag_name"`
 		Assets  []struct {
@@ -112,11 +116,16 @@ func GetLatestBuildpack(name string) (string, error) {
 		if err != nil {
 			return "", err
 		}
+
 		defer buildpackResp.Body.Close()
 
 		contents, err = ioutil.ReadAll(buildpackResp.Body)
 		if err != nil {
 			return "", err
+		}
+
+		if buildpackResp.StatusCode != http.StatusOK {
+			return "", errors.Errorf("Erroring Getting buildpack : status %d : %s", buildpackResp.StatusCode, contents)
 		}
 
 		downloadCache.Store(name+release.TagName, contents)
@@ -168,30 +177,6 @@ func PackBuildNamedImage(appImageName, appDir string, buildpacks ...string) (*Ap
 		fixtureName: appDir,
 	}
 	return app, nil
-}
-
-func BuildCFLinuxFS3() error {
-	cmd := exec.Command("pack", "stacks", "--no-color")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return errors.Wrapf(err, "could not get stack list %s", out)
-	}
-
-	contains, err := regexp.Match(CFLINUXFS3, out)
-
-	if err != nil {
-		return errors.Wrap(err, "error running regex match")
-	} else if contains {
-		fmt.Println("cflinuxfs3 stack already added")
-		return nil
-	}
-
-	cmd = exec.Command("pack", "add-stack", CFLINUXFS3, "--build-image", DEFAULT_BUILD_IMAGE, "--run-image", DEFAULT_RUN_IMAGE)
-	if err = cmd.Run(); err != nil {
-		return errors.Wrap(err, "could not add stack")
-	}
-
-	return nil
 }
 
 type App struct {
@@ -362,6 +347,8 @@ func (a *App) HTTPGet(path string) (string, map[string][]string, error) {
 	if err != nil {
 		return "", nil, err
 	}
+
+	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return "", nil, fmt.Errorf("received bad response from application")
