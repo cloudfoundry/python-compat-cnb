@@ -16,7 +16,7 @@ github.com/buildpack/libbuildpack/build
 github.com/buildpack/libbuildpack/layers
 # github.com/cloudfoundry/dagger v0.0.0-20190401200145-cf7993ea8d76
 github.com/cloudfoundry/dagger
-# github.com/cloudfoundry/libcfbuildpack v1.53.0
+# github.com/cloudfoundry/libcfbuildpack v1.54.0
 github.com/cloudfoundry/libcfbuildpack/detect
 github.com/cloudfoundry/libcfbuildpack/helper
 github.com/cloudfoundry/libcfbuildpack/buildpack
