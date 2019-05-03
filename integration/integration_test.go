@@ -14,31 +14,42 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+var (
+	bpDir, pythonCompatURI, pythonURI, pipURI string
+)
+
 func TestIntegration(t *testing.T) {
+	var err error
+	Expect := NewWithT(t).Expect
+	bpDir, err = dagger.FindBPRoot()
+	Expect(err).NotTo(HaveOccurred())
+	pythonCompatURI, err = dagger.PackageBuildpack(bpDir)
+	Expect(err).ToNot(HaveOccurred())
+	defer os.RemoveAll(pythonCompatURI)
+
+	pythonURI, err = dagger.GetLatestBuildpack("python-cnb")
+	Expect(err).ToNot(HaveOccurred())
+	defer os.RemoveAll(pythonURI)
+
+	pipURI, err = dagger.GetLatestBuildpack("pip-cnb")
+	Expect(err).ToNot(HaveOccurred())
+	defer os.RemoveAll(pipURI)
+
 	spec.Run(t, "Integration", testIntegration, spec.Report(report.Terminal{}))
 }
 
 func testIntegration(t *testing.T, when spec.G, it spec.S) {
+	var Expect func(interface{}, ...interface{}) GomegaAssertion
 	it.Before(func() {
-		RegisterTestingT(t)
+		Expect = NewWithT(t).Expect
 	})
 
 	when("building a simple app", func() {
 		it("using the python version in the runtime.txt", func() {
-			uri, err := dagger.PackageBuildpack()
-			Expect(err).ToNot(HaveOccurred())
-
-			pythonCNBURI, err := dagger.GetLatestBuildpack("python-cnb")
-			Expect(err).ToNot(HaveOccurred())
-
-			pipCNBURI, err := dagger.GetLatestBuildpack("pip-cnb")
-			Expect(err).ToNot(HaveOccurred())
-
-			app, err := dagger.PackBuild(filepath.Join("testdata", "simple_app"), uri, pythonCNBURI, pipCNBURI)
+			app, err := dagger.PackBuild(filepath.Join("testdata", "simple_app"), pythonCompatURI, pythonURI, pipURI)
 			Expect(err).ToNot(HaveOccurred())
 
 			app.SetHealthCheck("", "3s", "1s")
-			app.Env["PORT"] = "8080"
 
 			err = app.Start()
 			if err != nil {
@@ -56,8 +67,6 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 			body, _, err := app.HTTPGet("/version")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(body).To(ContainSubstring("2.7.15"))
-
-			Expect(app.Destroy()).To(Succeed())
 		})
 	})
 
