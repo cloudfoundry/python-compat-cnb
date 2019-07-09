@@ -25,15 +25,15 @@ func TestIntegration(t *testing.T) {
 	Expect(err).NotTo(HaveOccurred())
 	pythonCompatURI, err = dagger.PackageBuildpack(bpDir)
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(pythonCompatURI)
+	defer dagger.DeleteBuildpack(pythonCompatURI)
 
 	pythonURI, err = dagger.GetLatestBuildpack("python-cnb")
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(pythonURI)
+	defer dagger.DeleteBuildpack(pythonURI)
 
 	pipURI, err = dagger.GetLatestBuildpack("pip-cnb")
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(pipURI)
+	defer dagger.DeleteBuildpack(pipURI)
 
 	spec.Run(t, "Integration", testIntegration, spec.Report(report.Terminal{}))
 }
