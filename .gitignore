@@ -4,4 +4,3 @@
 .bin
 python-compat-cnb_*
 *.tgz
-/buildpack.toml
