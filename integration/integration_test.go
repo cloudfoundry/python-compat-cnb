@@ -46,7 +46,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 	when("building a simple app", func() {
 		it("using the python version in the runtime.txt", func() {
-			app, err := dagger.PackBuild(filepath.Join("testdata", "simple_app"), pythonCompatURI, pythonURI, pipURI)
+			app, err := dagger.PackBuild(filepath.Join("testdata", "simple_app"), pythonURI, pythonCompatURI, pipURI)
 			Expect(err).ToNot(HaveOccurred())
 
 			app.SetHealthCheck("", "3s", "1s")

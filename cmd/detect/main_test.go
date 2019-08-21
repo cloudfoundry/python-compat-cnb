@@ -41,9 +41,13 @@ func testDetect(t *testing.T, when spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(code).To(Equal(detect.PassStatusCode))
 
-			Expect(factory.Output).To(Equal(buildplan.BuildPlan{
-				python.Dependency: buildplan.Dependency{
-					Version: version,
+			Expect(factory.Plans.Plan).To(Equal(buildplan.Plan{
+				Requires: []buildplan.Required{
+					{
+						Name:     python.Dependency,
+						Version:  version,
+						Metadata: buildplan.Metadata{"launch": true},
+					},
 				},
 			}))
 		})

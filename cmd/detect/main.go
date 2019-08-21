@@ -7,9 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/cloudfoundry/python-cnb/python"
+
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
-	"github.com/cloudfoundry/python-cnb/python"
 
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 )
@@ -23,11 +24,6 @@ func main() {
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "failed to create a default detection context: %s", err)
 		os.Exit(100)
-	}
-
-	if err := context.BuildPlan.Init(); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Failed to initialize Build Plan: %s\n", err)
-		os.Exit(101)
 	}
 
 	code, err := runDetect(context)
@@ -53,9 +49,13 @@ func runDetect(context detect.Detect) (int, error) {
 		}
 	}
 
-	return context.Pass(buildplan.BuildPlan{
-		python.Dependency: buildplan.Dependency{
-			Version: version,
+	return context.Pass(buildplan.Plan{
+		Requires: []buildplan.Required{
+			{
+				Name:     python.Dependency,
+				Version:  version,
+				Metadata: buildplan.Metadata{"launch": true},
+			},
 		},
 	})
 }
