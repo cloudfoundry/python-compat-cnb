@@ -66,7 +66,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 			body, _, err := app.HTTPGet("/version")
 			Expect(err).ToNot(HaveOccurred())
-			Expect(body).To(ContainSubstring("2.7."))
+			Expect(body).To(ContainSubstring("3.8."))
 		})
 	})
 
