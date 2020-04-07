@@ -6,14 +6,13 @@ import (
 	"testing"
 
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/libcfbuildpack/helper"
-	"github.com/cloudfoundry/python-runtime-cnb/python"
-
 	"github.com/cloudfoundry/libcfbuildpack/detect"
+	"github.com/cloudfoundry/libcfbuildpack/helper"
 	"github.com/cloudfoundry/libcfbuildpack/test"
-	. "github.com/onsi/gomega"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
+
+	. "github.com/onsi/gomega"
 )
 
 func TestUnitDetect(t *testing.T) {
@@ -44,7 +43,7 @@ func testDetect(t *testing.T, when spec.G, it spec.S) {
 			Expect(factory.Plans.Plan).To(Equal(buildplan.Plan{
 				Requires: []buildplan.Required{
 					{
-						Name:     python.Dependency,
+						Name:     "python",
 						Version:  version,
 						Metadata: buildplan.Metadata{"launch": true},
 					},

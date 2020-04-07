@@ -7,11 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cloudfoundry/python-runtime-cnb/python"
-
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
-
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 )
 
@@ -52,7 +49,7 @@ func runDetect(context detect.Detect) (int, error) {
 	return context.Pass(buildplan.Plan{
 		Requires: []buildplan.Required{
 			{
-				Name:     python.Dependency,
+				Name:     "python",
 				Version:  version,
 				Metadata: buildplan.Metadata{"launch": true},
 			},
